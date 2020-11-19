@@ -12,8 +12,6 @@ class ADAMSpider(scrapy.Spider):
             yield scrapy.Request(url=url, callback=self.parse)
 
     def parse(self, response):
-        page = response.url.split("/")[-2]
-        filename = f'ADAM-{page}.html'
-        with open(filename, 'wb') as f:
-            f.write(response.body)
-        self.log(f'Saved file {filename}')
+        for row in response.css('div.flex-auto.min-width-0.col-md-2.mr-3 a.js-navigation-open.link-gray-dark'):
+            print(row.attrib['href'] + '\n\n\n\n')
+            yield row.attrib['href']
