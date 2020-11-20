@@ -23,17 +23,19 @@ class ADAMSpider(scrapy.Spider):
         first_ans = div_main.css('div#ency_summary ::text').getall()
 
         ids = div_main.css('div.section-body::attr(id)').getall()
+        all_keywords = div_main.css('div.section-title ::text').getall()
         texts = div_main.css('div.section-body')
         answers = []
+        keywords = []
 
-        for index, answer in zip(ids, texts):
+        for index, answer, keyword in zip(ids, texts, all_keywords):
             if re.search(r"section-\d+", index):
                 answers.append(" ".join(answer.css('::text').getall()))
+                keywords.append(keyword)
 
-        second_title = div_main.css('div.section-title ::text').get()
         yield {
             'answers': answers,
-            second_title: second_title
+            'claves': keywords
         }
 
 
