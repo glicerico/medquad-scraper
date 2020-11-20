@@ -21,30 +21,27 @@ class ADAMSpider(scrapy.Spider):
     def parse(self, response):
         div_main = response.css('div.main-single')
         first_ans = div_main.css('div#ency_summary ::text').getall()
+        QAs = {'information': " ".join(first_ans)}
 
         ids = div_main.css('div.section-body::attr(id)').getall()
         all_keywords = div_main.css('div.section-title ::text').getall()
         texts = div_main.css('div.section-body')
-        answers = []
-        keywords = []
 
         for index, answer, keyword in zip(ids, texts, all_keywords):
             if re.search(r"section-\d+", index):
-                answers.append(" ".join(answer.css('::text').getall()))
-                keywords.append(keyword)
+                # Remove "(Prognosis)", eliminated in MedQuAD crawl
+                if "Outlook" in keyword:
+                    keyword = "Outlook"
+                keyword = keyword.lower()  # Lowercaps to simplify lookup
+                QAs[keyword] = " ".join(answer.css('::text').getall())
 
-        yield {
-            'answers': answers,
-            'claves': keywords
-        }
-
-
+        yield QAs
 
         root = self.tree.getroot()
         for qapair in root.iter('QAPair'):
-            question = qapair.find('Question').text
+            qtype = qapair.find('Question').get('qtype')
             answer = qapair.find('Answer')
-            answer.text = 'Algo asi'
+            answer.text = QAs[qtype]
         tree = ET.ElementTree(root)
         tree.write('newdata.xml')
 
