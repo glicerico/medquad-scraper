@@ -1,5 +1,6 @@
 import glob
 import xml.etree.cElementTree as ET
+import re
 
 import scrapy
 
@@ -18,8 +19,25 @@ class ADAMSpider(scrapy.Spider):
             yield scrapy.Request(url=url, callback=self.parse)
 
     def parse(self, response):
-        title_text = response.css('title::text').get()
-        yield {'test': title_text}
+        div_main = response.css('div.main-single')
+        first_ans = div_main.css('div#ency_summary ::text').getall()
+
+        ids = div_main.css('div.section-body::attr(id)').getall()
+        texts = div_main.css('div.section-body')
+        answers = []
+
+        for index, answer in zip(ids, texts):
+            if re.search(r"section-\d+", index):
+                answers.append(" ".join(answer.css('::text').getall()))
+
+        second_title = div_main.css('div.section-title ::text').get()
+        yield {
+            'answers': answers,
+            second_title: second_title
+        }
+
+
+
         root = self.tree.getroot()
         for qapair in root.iter('QAPair'):
             question = qapair.find('Question').text
