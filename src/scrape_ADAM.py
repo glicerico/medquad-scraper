@@ -8,12 +8,12 @@ import requests
 
 
 def parse(response):
-    div_main = response.xpath('//div[@class="main-single"]')
-    first_ans = div_main.xpath('//div[@id="ency_summary"/*/text()').getall()
+    div_main = response.xpath('//div[@class="main-single"]')[0]
+    first_ans = " ".join(div_main.xpath('//div[@id="ency_summary"]/*/text()'))
     QAs = {'information': " ".join(first_ans)}  # First answer doesn't come with keyword
 
-    ids = div_main.xpath('//div[@class="section-body"]/@id').getall()
-    all_keywords = div_main.xpath('//div[@class="section-title"]/*/text()').getall()
+    ids = div_main.xpath('//div[@class="section-body"]/@id')
+    all_keywords = div_main.xpath('//div[@class="section-title"]/*/text()')
     texts = div_main.xpath('//div[@class="section-body"]')
 
     for index, answer, keyword in zip(ids, texts, all_keywords):
@@ -22,7 +22,7 @@ def parse(response):
             if "Outlook" in keyword:
                 keyword = "Outlook"
             keyword = keyword.lower()  # Lowercaps to simplify lookup
-            QAs[keyword] = " ".join(answer.xpath('*/text()').getall())
+            QAs[keyword] = " ".join(answer.xpath('*/text()'))
 
     return QAs
 
