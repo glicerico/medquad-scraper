@@ -18,9 +18,6 @@ def parse(response):
 
     for index, answer, keyword in zip(ids, texts, all_keywords):
         if re.search(r"section-\d+", index):
-            # Remove "(Prognosis)", eliminated in MedQuAD crawl
-            if "Outlook" in keyword:
-                keyword = "Outlook"
             keyword = keyword.lower()  # Lowercase to simplify lookup
             qas[keyword] = " ".join(answer.xpath('*//text()'))
 
@@ -32,7 +29,9 @@ def fill_xml(qa_pairs, empty_xml):
     for qapair in root.iter('QAPair'):
         qtype = qapair.find('Question').get('qtype')
         answer = qapair.find('Answer')
-        answer.text = qa_pairs[qtype]
+        for key, value in qa_pairs.items():
+            if key in qtype or qtype in key:  # Check both ways, as keywords were modified in MedLine
+                answer.text = value
     return ET.ElementTree(root)
 
 
