@@ -1,8 +1,9 @@
 import glob
-import xml.etree.cElementTree as ET
+import html
 import re
+import xml.etree.cElementTree as ET
 
-from lxml import html
+from lxml import html as html_lxml
 import requests
 
 
@@ -49,7 +50,9 @@ for xml_file in glob.glob(my_path + extension):
     url = xml_tree.getroot().attrib['url']
 
     page = requests.get(url)
-    html_tree = html.fromstring(page.content)
+    page_code = page.content.decode('UTF-8')  # Convert to string to separate list items with comma
+    page_code = page_code.replace('</li>', ', ')  # Replace with comma
+    html_tree = html_lxml.fromstring(page_code)
     QA_dict = parse(html_tree)
     filled_xml_tree = fill_xml(QA_dict, xml_tree)
     write_xml_tree(filled_xml_tree, 'test.xml')
