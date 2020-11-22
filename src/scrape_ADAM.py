@@ -36,16 +36,12 @@ def fill_xml(qa_pairs, empty_xml):
     return ET.ElementTree(root)
 
 
-def write_xml_tree(new_tree, filename):
-    new_tree.write(filename)
-
-
-my_path = "/home/andres/repositories/MedQuAD/10_MPlus_ADAM_QA_trash/"
-# my_path = "/home/andres/repositories/MedQuAD/10_MPlus_ADAM_QA/"
+my_path = "/home/andres/repositories/MedQuAD/10_MPlus_ADAM_QA/"
 extension = "*.xml"
 tree = None
 
 for xml_file in glob.glob(my_path + extension):
+    print(f"Processing file {xml_file} ...")
     xml_tree = ET.ElementTree(file=xml_file)
     url = xml_tree.getroot().attrib['url']
 
@@ -55,4 +51,4 @@ for xml_file in glob.glob(my_path + extension):
     html_tree = html_lxml.fromstring(page_code)
     QA_dict = parse(html_tree)
     filled_xml_tree = fill_xml(QA_dict, xml_tree)
-    write_xml_tree(filled_xml_tree, 'test.xml')
+    filled_xml_tree.write('test.xml')
