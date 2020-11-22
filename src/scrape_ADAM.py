@@ -8,7 +8,7 @@ import requests
 
 
 def parse(response):
-    div_main = response.xpath('//div[@class="main-single"]')
+    div_main = response.xpath('//div[contains(@class,"main")]')
     if div_main:
         div_main = div_main[0]
     else:
@@ -35,13 +35,20 @@ def fill_xml(qa_pairs, empty_xml):
     for qapair in root.iter('QAPair'):
         qtype = qapair.find('Question').get('qtype')
         answer = qapair.find('Answer')
+        found_answer = False
         for key, value in qa_pairs.items():
             if key in qtype or qtype in key:  # Check both ways, as keywords were modified in MedLine
                 answer.text = value
+                del qa_pairs[key]
+                found_answer = True
+                break
+        if not found_answer:
+            print(f"WARNING: Could not find key: {qtype}")
     return ET.ElementTree(root)
 
 
 my_path = "/home/andres/repositories/MedQuAD/10_MPlus_ADAM_QA/"
+my_path = "/home/andres/repositories/MedQuAD/10_MPlus_ADAM_QA_trash/"
 extension = "*.xml"
 tree = None
 
@@ -51,11 +58,10 @@ for xml_file in glob.glob(my_path + extension):
     url = xml_tree.getroot().attrib['url']
 
     page = requests.get(url)
-    # page_code = page.content.decode('UTF-8')  # Convert to string to separate list items with comma
-    # page_code = page_code.replace('<li>', '')  # Replace with comma
-    # page_code = page_code.replace('</li>', ', ')  # Replace with comma
-    # html_tree = html_lxml.fromstring(page_code)
-    html_tree = html_lxml.fromstring(page.content)
+    page_code = page.content.decode('UTF-8')  # Convert to string to separate list items with comma
+    page_code = page_code.replace('<li>', '')  # Replace with comma
+    page_code = page_code.replace('</li>', ', ')  # Replace with comma
+    html_tree = html_lxml.fromstring(page_code)
     QA_dict = parse(html_tree)
     if QA_dict:  # Don't continue if result is None
         filled_xml_tree = fill_xml(QA_dict, xml_tree)
