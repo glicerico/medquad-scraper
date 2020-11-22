@@ -3,14 +3,13 @@ import xml.etree.cElementTree as ET
 import re
 
 from lxml import html
-from lxml.cssselect import CSSSelector
 import requests
 
 
 def parse(response):
     div_main = response.xpath('//div[@class="main-single"]')[0]
     first_ans = div_main.xpath('//div[@id="ency_summary"]/*/text()')
-    QAs = {'information': " ".join(first_ans)}  # First answer doesn't come with keyword
+    qas = {'information': " ".join(first_ans)}  # First answer doesn't come with keyword
 
     ids = div_main.xpath('//div[@class="section-body"]/@id')
     all_keywords = div_main.xpath('//div[@class="section-title"]/*/text()')
@@ -21,18 +20,18 @@ def parse(response):
             # Remove "(Prognosis)", eliminated in MedQuAD crawl
             if "Outlook" in keyword:
                 keyword = "Outlook"
-            keyword = keyword.lower()  # Lowercaps to simplify lookup
-            QAs[keyword] = " ".join(answer.xpath('*//text()'))
+            keyword = keyword.lower()  # Lowercase to simplify lookup
+            qas[keyword] = " ".join(answer.xpath('*//text()'))
 
-    return QAs
+    return qas
 
 
-def fill_xml(QA_pairs, empty_xml):
+def fill_xml(qa_pairs, empty_xml):
     root = empty_xml.getroot()
     for qapair in root.iter('QAPair'):
         qtype = qapair.find('Question').get('qtype')
         answer = qapair.find('Answer')
-        answer.text = QA_pairs[qtype]
+        answer.text = qa_pairs[qtype]
     return ET.ElementTree(root)
 
 
