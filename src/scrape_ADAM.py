@@ -9,7 +9,7 @@ import requests
 
 def parse(response):
     div_main = response.xpath('//div[@class="main-single"]')[0]
-    first_ans = " ".join(div_main.xpath('//div[@id="ency_summary"]/*/text()'))
+    first_ans = div_main.xpath('//div[@id="ency_summary"]/*/text()')
     QAs = {'information': " ".join(first_ans)}  # First answer doesn't come with keyword
 
     ids = div_main.xpath('//div[@class="section-body"]/@id')
@@ -22,7 +22,7 @@ def parse(response):
             if "Outlook" in keyword:
                 keyword = "Outlook"
             keyword = keyword.lower()  # Lowercaps to simplify lookup
-            QAs[keyword] = " ".join(answer.xpath('*/text()'))
+            QAs[keyword] = " ".join(answer.xpath('*//text()'))
 
     return QAs
 
