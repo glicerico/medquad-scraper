@@ -1,5 +1,6 @@
 import glob
 import os
+import sys
 import re
 import xml.etree.cElementTree as ET
 
@@ -47,26 +48,28 @@ def fill_xml(qa_pairs, empty_xml):
     return ET.ElementTree(root)
 
 
-my_path = "/home/andres/repositories/MedQuAD/10_MPlus_ADAM_QA/"
-# my_path = "/home/andres/repositories/MedQuAD/10_MPlus_ADAM_QA_trash/"
-extension = "*.xml"
-new_dir = "filled_files"
-if not os.path.exists(new_dir):
-    os.makedirs(new_dir)
-tree = None
+def main(my_path):
+    extension = "*.xml"
+    new_dir = "filled_files"
+    if not os.path.exists(new_dir):
+        os.makedirs(new_dir)
 
-for xml_file in glob.glob(my_path + extension):
-    print(f"Processing file {xml_file} ...")
-    xml_tree = ET.ElementTree(file=xml_file)
-    url = xml_tree.getroot().attrib['url']
+    for xml_file in glob.glob(my_path + extension):
+        print(f"Processing file {xml_file} ...")
+        xml_tree = ET.ElementTree(file=xml_file)
+        url = xml_tree.getroot().attrib['url']
 
-    page = requests.get(url)
-    page_code = page.content.decode('UTF-8')  # Convert to string to separate list items with comma
-    page_code = page_code.replace('<li>', '')  # Replace with comma
-    page_code = page_code.replace('</li>', ', ')  # Replace with comma
-    html_tree = html.fromstring(page_code)
-    QA_dict = parse(html_tree)
-    if QA_dict:  # Don't continue if result is None
-        filled_xml_tree = fill_xml(QA_dict, xml_tree)
-        filename = os.path.join(new_dir, os.path.basename(os.path.normpath(xml_file)))
-        filled_xml_tree.write(filename)
+        page = requests.get(url)
+        page_code = page.content.decode('UTF-8')  # Convert to string to separate list items with comma
+        page_code = page_code.replace('<li>', '')  # Replace with comma
+        page_code = page_code.replace('</li>', ', ')  # Replace with comma
+        html_tree = html.fromstring(page_code)
+        QA_dict = parse(html_tree)
+        if QA_dict:  # Don't continue if result is None
+            filled_xml_tree = fill_xml(QA_dict, xml_tree)
+            filename = os.path.join(new_dir, os.path.basename(os.path.normpath(xml_file)))
+            filled_xml_tree.write(filename)
+
+
+if __name__ == "__main__":
+    main(sys.argv[1:])
