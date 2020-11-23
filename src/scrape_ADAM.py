@@ -72,6 +72,11 @@ def main(my_path):
     """
     For each xml file in my_path, scrape answers for questions inside it.
     The URL to scrape the answers comes in the xml file.
+    USAGE:
+    python scrape_ADAM.py <db_directory>
+    <db_directory>  Path to xml files from the ADAM database from MedQuAD.
+    OUTPUT:
+
     """
     extension = "*.xml"
     new_dir = "filled_ADAM"
@@ -97,4 +102,4 @@ def main(my_path):
 
 
 if __name__ == "__main__":
-    main(sys.argv[1:])
+    main(sys.argv[1])
