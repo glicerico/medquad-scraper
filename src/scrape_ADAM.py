@@ -75,7 +75,9 @@ def main(my_path):
     USAGE:
     python scrape_ADAM.py <db_directory>
     <db_directory>  Path to xml files from the ADAM database from MedQuAD.
+
     OUTPUT:
+    directory "filled_ADAM" with all filled xml files
 
     """
     extension = "*.xml"
