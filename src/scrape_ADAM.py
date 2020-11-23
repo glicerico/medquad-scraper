@@ -74,7 +74,7 @@ def main(my_path):
     The URL to scrape the answers comes in the xml file.
     """
     extension = "*.xml"
-    new_dir = "filled_files"
+    new_dir = "filled_ADAM"
     if not os.path.exists(new_dir):
         os.makedirs(new_dir)
 
