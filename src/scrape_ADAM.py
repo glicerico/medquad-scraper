@@ -37,7 +37,7 @@ def parse(response):
     for index, answer, keyword in zip(ids, texts, all_keywords):
         if re.search(r"section-\d+", index):
             keyword = keyword.lower()  # Lowercase to simplify lookup
-            qas[keyword] = " ".join(answer.xpath('*//text()'))
+            qas[keyword] = " ".join(answer.xpath('.//text()'))
 
     return qas
 
