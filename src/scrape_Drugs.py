@@ -39,6 +39,8 @@ def parse(response):
                 keyword = "contraindication"
             elif "risk" in keyword:
                 keyword = "side effects"
+            elif "what is" in keyword:
+                keyword = "information"
 
             qas[keyword] = " ".join(answer.xpath('.//text()'))
 
