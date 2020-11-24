@@ -80,7 +80,7 @@ def main(my_path):
     directory "filled_ADAM" with all filled xml files
 
     """
-    extension = "*.xml"
+    extension = "/*.xml"
     new_dir = "filled_ADAM"
     if not os.path.exists(new_dir):
         os.makedirs(new_dir)
