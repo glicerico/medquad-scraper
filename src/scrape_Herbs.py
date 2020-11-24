@@ -16,27 +16,23 @@ def parse(response):
     :return:  Dictionary of keyword-answer pairs
     """
 
-    div_main = response.xpath('//div[contains(@class,"main")]')
-    # Ensure that the html file follows the expected format, to avoid crashes.
-    if div_main:
-        div_main = div_main[0]
-    else:
-        print('Problem parsing file; skipping...')
-        return None  # If response didn't find the main class, exit
-
-    # Find the answer to the first (information) question
-    first_ans = div_main.xpath('//div[@id="ency_summary"]//text()')
-    qas = {'information': " ".join(first_ans)}  # First answer doesn't come with keyword
+    qas = dict()
 
     # Parse keywords and answers from html response
-    ids = div_main.xpath('//div[@class="section-body"]/@id')
-    all_keywords = div_main.xpath('//div[@class="section-title"]//text()')
-    texts = div_main.xpath('//div[@class="section-body"]')
+    ids = response.xpath('//div[@class="section-body"]/@id')
+    all_keywords = response.xpath('//div[@class="section-title"]//text()')
+    texts = response.xpath('//div[@class="section-body"]')
 
     # Build keyword-answer pairs
     for index, answer, keyword in zip(ids, texts, all_keywords):
         if re.search(r"section-\d+", index):
             keyword = keyword.lower()  # Lowercase to simplify lookup
+            # Change two specific keywords that are diff btw html and xmls
+            if "what is it" in keyword:
+                keyword = "information"
+            elif "safety concerns" in keyword:
+                keyword = "precautions"
+
             qas[keyword] = " ".join(answer.xpath('.//text()'))
 
     return qas
@@ -73,15 +69,15 @@ def main(my_path):
     For each xml file in my_path, scrape answers for questions inside it.
     The URL to scrape the answers comes in the xml file.
     USAGE:
-    python scrape_ADAM.py <db_directory>
-    <db_directory>  Path to xml files from the ADAM database from MedQuAD.
+    python scrape_Herbs.py <db_directory>
+    <db_directory>  Path to xml files from the Herbs database from MedQuAD.
 
     OUTPUT:
-    directory "filled_ADAM" with all filled xml files
+    directory "filled_Herbs" with filled xml files
 
     """
-    extension = "*.xml"
-    new_dir = "filled_ADAM"
+    extension = "/*.xml"
+    new_dir = "filled_Herbs"
     if not os.path.exists(new_dir):
         os.makedirs(new_dir)
 
