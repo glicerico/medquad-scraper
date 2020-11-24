@@ -29,12 +29,16 @@ def parse(response):
         if re.search(r"section-[warning|precautions|side-effects|brandname1|brand-name2|app-]?\d*", index):
             keyword = keyword.lower()  # Lowercase to simplify lookup
             # Change specific keywords that are diff btw html and xmls
-            if "why" in keyword:
+            if "why" in keyword and "prescribed" in keyword:
                 keyword = "indication"
-            elif "how" in keyword:
+            elif "how" in keyword and "used" in keyword:
                 keyword = "usage"
-            elif "emergency" in keyword:
+            elif "emergency" in keyword or "overdose" in keyword:
                 keyword = "emergency or overdose"
+            elif "should not" in keyword:
+                keyword = "contraindication"
+            elif "risk" in keyword:
+                keyword = "side effects"
 
             qas[keyword] = " ".join(answer.xpath('.//text()'))
 
