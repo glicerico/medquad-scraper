@@ -25,7 +25,8 @@ def parse(response):
 
     # Build keyword-answer pairs
     for index, answer, keyword in zip(ids, texts, all_keywords):
-        if re.search(r"section-[\d+|warning|precautions|side-effects|brandname1|brand-name2]", index):
+        # Try to accommodate different section naming in htmls
+        if re.search(r"section-[warning|precautions|side-effects|brandname1|brand-name2|app-]?\d*", index):
             keyword = keyword.lower()  # Lowercase to simplify lookup
             # Change specific keywords that are diff btw html and xmls
             if "why" in keyword:
