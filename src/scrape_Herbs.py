@@ -48,18 +48,18 @@ def fill_xml(qa_pairs, empty_xml):
     """
     root = empty_xml.getroot()
     # Find appropriate answer in html for each question in xml
-    for qapair in root.iter('QAPair'):
-        qtype = qapair.find('Question').get('qtype')  # Question keyword
-        answer = qapair.find('Answer')
+    for xml_qapair in root.iter('QAPair'):
+        qtype = xml_qapair.find('Question').get('qtype')  # Question keyword
+        answer = xml_qapair.find('Answer')
         found_answer = False
         # Search answer
         for key, value in qa_pairs.items():
-            if key in qtype or qtype in key:  # Check both ways, as keywords were modified in MedLine
+            if qtype in key or key in qtype:  # Check both ways, as keywords were modified in MedLine
                 answer.text = value
-                del qa_pairs[key]
                 found_answer = True
                 break
         if not found_answer:
+            answer.text = 'No information found.'
             print(f"WARNING: Could not find key: {qtype}")
     return ET.ElementTree(root)
 

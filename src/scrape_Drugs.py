@@ -78,11 +78,11 @@ def main(my_path):
     For each xml file in my_path, scrape answers for questions inside it.
     The URL to scrape the answers comes in the xml file.
     USAGE:
-    python scrape_Herbs.py <db_directory>
+    python scrape_Drugs.py <db_directory>
     <db_directory>  Path to xml files from the Herbs database from MedQuAD.
 
     OUTPUT:
-    directory "filled_Herbs" with filled xml files
+    directory "filled_Drugs" with filled xml files
 
     """
     extension = "/*.xml"
