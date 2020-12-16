@@ -10,6 +10,7 @@ import requests
 
 from joblib import Parallel, delayed
 
+
 def parse(response):
     """
     Parses html response object to find keyword-answer pairs.
@@ -69,30 +70,38 @@ def fill_xml(qa_pairs, empty_xml):
             print(f"WARNING: Could not find key: {qtype}")
     return ET.ElementTree(root)
 
-def process_xml(xml_file, destination_dir):
-        print(f"Processing file {xml_file} ...")
-        xml_tree = ET.ElementTree(file=xml_file)
-        url = xml_tree.getroot().attrib['url']
 
-        page = requests.get(url)  # Download website code
-        page_code = page.content.decode('UTF-8')  # Convert to string to separate list items with comma
-        page_code = page_code.replace('<li>', '')  # Replace with comma
-        page_code = page_code.replace('</li>', ', ')  # Replace with comma
-        html_tree = html.fromstring(page_code)
-        QA_dict = parse(html_tree)
-        if QA_dict:  # Don't continue if result is None
-            filled_xml_tree = fill_xml(QA_dict, xml_tree)
-            filename = os.path.join(destination_dir, os.path.basename(os.path.normpath(xml_file)))
-            filled_xml_tree.write(filename)  # Write to file
+def process_xml(xml_file, destination_dir):
+    """
+    Extracts url from an XML file, gets HTML code from it, calls XML-filler function, and writes results to file.
+    :param xml_file:
+    :param destination_dir:
+    :return:
+    """
+    print(f"Processing file {xml_file} ...")
+    xml_tree = ET.ElementTree(file=xml_file)
+    url = xml_tree.getroot().attrib['url']
+
+    page = requests.get(url)  # Download website code
+    page_code = page.content.decode('UTF-8')  # Convert to string to separate list items with comma
+    page_code = page_code.replace('<li>', '')  # Replace with comma
+    page_code = page_code.replace('</li>', ', ')  # Replace with comma
+    html_tree = html.fromstring(page_code)
+    QA_dict = parse(html_tree)
+    if QA_dict:  # Don't continue if result is None
+        filled_xml_tree = fill_xml(QA_dict, xml_tree)
+        filename = os.path.join(destination_dir, os.path.basename(os.path.normpath(xml_file)))
+        filled_xml_tree.write(filename)  # Write to file
 
 
 def main(my_path, parallel=True):
     """
     For each xml file in my_path, scrape answers for questions inside it.
-    The URL to scrape the answers comes in the xml file.
+    The URL to scrape the answers is found in the xml file.
     USAGE:
-    python scrape_ADAM.py <db_directory>
+    python scrape_ADAM.py <db_directory> [parallel_flag]
     <db_directory>  Path to xml files from the ADAM database from MedQuAD.
+    [parallel_flag] Boolean flag indicating parallel processing (Default: True)
 
     OUTPUT:
     directory "filled_ADAM" with all filled xml files
@@ -111,6 +120,7 @@ def main(my_path, parallel=True):
     else:
         for xml_file in xml_files:
             process_xml(xml_file, new_dir)
+
 
 if __name__ == "__main__":
     main(sys.argv[1])
