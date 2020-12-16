@@ -23,6 +23,7 @@ This produces a new directory
 `filled_ADAM` containing xml files with the scraped answers.
 The xml files are processed in parallel by default.
 4) Repeat step 3 for the two other missing databases: 
+   
     - 11_MPlusDrugs_QA
     
     python src/scrape_Drugs.py <PATH_TO_MEDQUAD_DIR>/11_MPlusDrugs_QA/
