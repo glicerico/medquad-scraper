@@ -25,7 +25,8 @@ The xml files are processed in parallel by default.
 4) Repeat step 3 for the two other missing databases: 
     - 11_MPlusDrugs_QA
     
-    ```python src/scrape_Drugs.py <PATH_TO_MEDQUAD_DIR>/11_MPlusDrugs_QA/```
+    python src/scrape_Drugs.py <PATH_TO_MEDQUAD_DIR>/11_MPlusDrugs_QA/
+    
     - 12_MPlusHerbsSupplements_QA
     
-    ```python src/scrape_Herbs.py <PATH_TO_MEDQUAD_DIR>/12_MPlusHerbsSupplements_QA/```
+    python src/scrape_Herbs.py <PATH_TO_MEDQUAD_DIR>/12_MPlusHerbsSupplements_QA/
